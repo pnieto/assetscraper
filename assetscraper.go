@@ -9,7 +9,10 @@ import (
 
 func main() {
 	// Instantiate default collector
-	c := colly.NewCollector()
+	c := colly.NewCollector(
+	     colly.MaxDepth(1),
+	     colly.AllowedDomains("canal.uned.es"),
+	)
 
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
