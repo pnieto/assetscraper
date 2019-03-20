@@ -1,17 +1,19 @@
 ################################
 # STEP 1 build executable binary
 ################################
-FROM golang:alpine AS builder
-RUN apk update && apk add --no-cache git
-WORKDIR $GOPATH/src/main/assetscraper
+FROM golang:latest as build
+
+WORKDIR $GOPATH/src/github.com/pnieto/assetscraper
 COPY . .
-RUN go get -u github.com/gocolly/colly    
-RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -gcflags="-e" -o /go/bin/assetscraper
+RUN go version && go get -u -v golang.org/x/vgo
+
+RUN vgo install ./...
+
 ENTRYPOINT ["/go/bin/assetscraper"]
 
 ############################
 # STEP 2 build a small image
 ############################
-#FROM scratch
-#COPY --from=builder /go/bin/assetscraper /go/bin/assetscraper
-#ENTRYPOINT ["/go/bin/assetscraper"]
+FROM gcr.io/distroless/base
+COPY --from=build /go/bin/assetscraper /
+ENTRYPOINT ["/assetscraper"]
