@@ -5,9 +5,10 @@ FROM golang:latest as build
 
 WORKDIR $GOPATH/src/github.com/pnieto/assetscraper
 COPY . .
-RUN go version && go get -u -v golang.org/x/vgo
+RUN go get -u github.com/golang/dep/...
+RUN dep ensure
 
-RUN vgo install ./...
+RUN go build -o /go/bin/assetscraper .
 
 ENTRYPOINT ["/go/bin/assetscraper"]
 
